@@ -4,8 +4,10 @@ import { Word } from "@/components/types/Word";
 
 type GameAction =
     | { type: 'INPUT'; payload: string }
+    | { type: 'START' }
     | { type: 'SKIP' }
     | { type: 'DELETE' }
+    | { type: 'DELETE_WORD' }
     | { type: 'START_OVER' }
     | { type: 'LOAD_WORDLIST'; payload: string[] }
     | { type: 'TIME_OVER' };
@@ -17,14 +19,18 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             return { ...state, wordList };
         }
 
+        case 'START': {
+            const wordList = [...state.wordList];
+            const currentWord: Word = { ...wordList[state.currentIndex] };
+            currentWord.status = WordStatus.Typing;
+            wordList[state.currentIndex] = currentWord;
+            return { ...state, gameIsActive: true, wordList };
+        }
+
         case 'INPUT': {
             const wordList = [...state.wordList];
             const currentWord: Word = { ...wordList[state.currentIndex] };
             currentWord.typed = action.payload;
-            if (action.payload === currentWord.text) {
-                currentWord.status = WordStatus.Completed;
-                state.userScore += 1;
-            }
             wordList[state.currentIndex] = currentWord;
             return { ...state, userInput: action.payload, wordList };
         }
@@ -32,17 +38,16 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         case 'SKIP': {
             const wordList = [...state.wordList];
             const currentWord: Word = { ...wordList[state.currentIndex] };
-            if (currentWord.status === WordStatus.Completed || state.userInput.trim() !== '') {
-                currentWord.status = currentWord.status === WordStatus.Completed ? WordStatus.Completed : WordStatus.Skipped;
-                wordList[state.currentIndex] = currentWord;
-                return {
-                    ...state,
-                    userInput: '',
-                    currentIndex: state.currentIndex + 1,
-                    wordList
-                };
-            }
-            return state;
+            const wordIsCompleted = currentWord.typed === currentWord.text;
+            currentWord.status = wordIsCompleted ? WordStatus.Completed : WordStatus.Skipped;
+
+            wordList[state.currentIndex] = currentWord;
+            return {
+                ...state,
+                userInput: '',
+                currentIndex: state.currentIndex + 1,
+                wordList
+            };
         }
 
         case 'DELETE': {
@@ -74,15 +79,42 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             return state;
         }
 
+        case 'DELETE_WORD': {
+            const wordList = [...state.wordList];
+            const currentWord: Word = { ...wordList[state.currentIndex] };
+
+            if (state.userInput === '' && state.currentIndex > 0) {
+                const previousWord: Word = { ...wordList[state.currentIndex - 1] };
+                if (previousWord.status === WordStatus.Skipped) {
+                    previousWord.status = WordStatus.Untyped;
+                    previousWord.typed = '';
+                    wordList[state.currentIndex - 1] = previousWord;
+                    return {
+                        ...state,
+                        wordList,
+                        currentIndex: state.currentIndex - 1
+                    };
+                }
+            }
+
+            currentWord.status = WordStatus.Untyped;
+            currentWord.typed = '';
+
+            wordList[state.currentIndex] = currentWord;
+            return {
+                ...state,
+                userInput: '',
+                wordList
+            };
+        }
+
         case 'START_OVER': {
-            const wordList = state.wordList.map(word => ({ ...word, status: WordStatus.Untyped }));
             return {
                 ...state,
                 currentIndex: 0,
                 userInput: '',
                 userScore: 0,
                 gameIsActive: false,
-                wordList
             };
         }
 

@@ -23,10 +23,14 @@ const Game: React.FC = () => {
     
     const {wordList, currentIndex, userInput, userScore, gameIsActive} = state;
     const gameTime = 60;
+    const wordCount = 100;
     const {timeLeft, resetTimer} = useCountdown(gameTime, gameIsActive);
     const typingInputRef = useRef<HTMLInputElement>(null);
 
     const processInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (!gameIsActive) {
+            dispatch({ type: 'START' });
+        }
         const input = event.target.value;
         const lastKeyPressed = event.nativeEvent.data;
 
@@ -50,21 +54,20 @@ const Game: React.FC = () => {
         
         const isWordDeletionKeyCombination = (isBackspace && ctrlKey) || (isDelete && altKey) || (isBackspace && altKey);
         if (isWordDeletionKeyCombination) {
-            const words = state.userInput.split(" ");
-            words.pop(); 
-            const updatedInput = words.join(" ");
-            dispatch({type: 'INPUT', payload: updatedInput});
+            dispatch({type: 'DELETE_WORD'});
         }
-    
+
         const isEntireLineDeletionKeyCombination = (isBackspace || isDelete) && metaKey;
         if (isEntireLineDeletionKeyCombination) {
-            dispatch({type: 'INPUT', payload: ''});
+            dispatch({type: 'DELETE_WORD'});
         }
     };
     
 
     const restartGame = () => {
+        const randomWordList = generate(wordCount);
         dispatch({type: 'START_OVER'});
+        dispatch({type: 'LOAD_WORDLIST', payload: randomWordList});
         resetTimer();
     };
 
@@ -74,7 +77,6 @@ const Game: React.FC = () => {
     });
 
     useEffect(() => {
-        const wordCount = 100;
         const randomWordList = generate(wordCount);
         dispatch({type: 'LOAD_WORDLIST', payload: randomWordList});
     }, []);

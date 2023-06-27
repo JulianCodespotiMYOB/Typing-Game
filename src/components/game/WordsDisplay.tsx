@@ -39,6 +39,14 @@ const WordsDisplay: React.FC<WordsDisplayProps> = ({ words, currentWordIndex, cu
 
     const exceedsCurrentWord = (word: Word) => word.typed.length > word.text.length;
 
+    const exceededWordsStyle = (word: Word) => {
+        let style = 'text-red-500';
+        if (word.status === WordStatus.Skipped) {
+            style += ' underline decoration-red-700';
+        }
+        return style;
+    }
+
     return (
       <div className="p-4 text-center text-3xl font-mono">
           {words.map((word, wordIndex) => (
@@ -52,14 +60,12 @@ const WordsDisplay: React.FC<WordsDisplayProps> = ({ words, currentWordIndex, cu
                       return shouldPlaceCaret ? [letterToDisplay, caret] : (isStartOfWord ? [caret, letterToDisplay] : letterToDisplay);
                   })}
                   {exceedsCurrentWord(word) &&
-                      <span className="text-red-500">{currentInput.slice(word.text.length)}</span>}
+                      <span className={exceededWordsStyle(word)}>{word.typed.slice(word.text.length)}</span>}
                   <span> </span>
               </span>
           ))}
       </div>
   );
-  
-  
 };
 
 export default WordsDisplay;
