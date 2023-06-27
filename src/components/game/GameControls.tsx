@@ -1,17 +1,15 @@
-import React from 'react';
-
 type GameControlsProps = {
-    handleReset: () => void;
-    score: number;
+  handleReset: () => void;
 };
 
-const GameControls: React.FC<GameControlsProps> = ({score, handleReset}) => {
-    return (
-        <div className="controls">
-            <p>Score: {score}</p>
-            <button onClick={handleReset} className="btn-reset">Reset</button>
-        </div>
-    );
+const GameControls: React.FC<GameControlsProps> = ({ handleReset }) => {
+  return (
+    <div className="flex space-x-4">
+      <button onClick={handleReset} className="btn btn-red">
+        Reset
+      </button>
+    </div>
+  );
 };
 
 export default GameControls;
