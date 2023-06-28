@@ -1,6 +1,5 @@
+import { Word, WordStatus } from '@/types';
 import React from 'react';
-import { Word } from '../types/Word';
-import { WordStatus } from '../enums/WordStatus';
 
 interface WordsDisplayProps {
     words: Word[];

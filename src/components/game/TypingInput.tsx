@@ -1,8 +1,9 @@
-import {forwardRef} from 'react';
+import { forwardRef } from 'react';
 
 type TypingInputProps = {
     value: string;
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    disabled: boolean;
 };
 
 const TypingInput = forwardRef<HTMLInputElement, TypingInputProps>((props, ref) => {
@@ -10,7 +11,7 @@ const TypingInput = forwardRef<HTMLInputElement, TypingInputProps>((props, ref) 
         <input
             type="text"
             value={props.value}
-            disabled={false}
+            disabled={props.disabled}
             onChange={props.handleChange}
             ref={ref}
             className="p-2 w-full rounded shadow-md mt-6 opacity-0"
@@ -19,5 +20,6 @@ const TypingInput = forwardRef<HTMLInputElement, TypingInputProps>((props, ref) 
 });
 
 TypingInput.displayName = 'TypingInput';
+
 export default TypingInput;
 

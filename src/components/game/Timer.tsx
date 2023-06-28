@@ -5,7 +5,8 @@ type TimerProps = {
 };
 
 const Timer: React.FC<TimerProps> = ({timeLeft}) => {
-    return <div>Time left: {timeLeft} seconds</div>;
+    const positiveTimeLeft = timeLeft > 0 ? timeLeft : 0;
+    return <div>Time left: {positiveTimeLeft} seconds</div>;
 };
 
 export default Timer;

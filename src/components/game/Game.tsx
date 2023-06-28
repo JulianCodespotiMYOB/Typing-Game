@@ -1,36 +1,28 @@
 "use client";
 
 import React, { ChangeEvent, useEffect, useReducer, useRef } from 'react';
-import TypingInput from './TypingInput';
-import WordsDisplay from './WordsDisplay';
-import Timer from './Timer';
-import GameControls from './GameControls';
 import { generate } from 'random-words';
-import useCountdown from '../../hooks/useCountdown'; 
-import gameReducer from '../../hooks/gameReducer';
-import { GameState } from '../types/GameState';
 
-const initialState: GameState = {
-    wordList: [],
-    currentIndex: 0,
-    userInput: '',
-    userScore: 0,
-    gameIsActive: false,
-};
+import { gameReducer, useTimer } from '@/hooks';
+import { InitialGameState } from '@/types';
+
+import Timer from './timer';
+import WordsDisplay from './wordsDisplay';
+import TypingInput from './typingInput';
+import GameControls from './gameControls';
 
 const Game: React.FC = () => {
-    const [state, dispatch] = useReducer(gameReducer, initialState);
-    
-    const {wordList, currentIndex, userInput, userScore, gameIsActive} = state;
-    const gameTime = 60;
-    const wordCount = 100;
-    const {timeLeft, resetTimer} = useCountdown(gameTime, gameIsActive);
+    const [state, dispatch] = useReducer(gameReducer, InitialGameState);
+
+    const { startTimer, stopTimer, resetTimer, time } = useTimer(state.totalTime);
+
     const typingInputRef = useRef<HTMLInputElement>(null);
 
-    const processInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-        if (!gameIsActive) {
+    const onInput = (event: ChangeEvent<HTMLInputElement>) => {
+        if (!state.gameIsActive) {
             dispatch({ type: 'START' });
         }
+
         const input = event.target.value;
         const lastKeyPressed = event.nativeEvent.data;
 
@@ -41,7 +33,7 @@ const Game: React.FC = () => {
         }
     };
 
-    const processKeydown = (event: KeyboardEvent) => {
+    const onKeydown = (event: KeyboardEvent) => {
         const { key, ctrlKey, altKey, metaKey } = event;
         
         const isBackspace = key === 'Backspace';
@@ -62,37 +54,50 @@ const Game: React.FC = () => {
             dispatch({type: 'DELETE_WORD'});
         }
     };
-    
 
-    const restartGame = () => {
-        const randomWordList = generate(wordCount);
+    const onRestart = () => {
+        resetTimer();
+        const randomWordList = generate(state.wordCount);
         dispatch({type: 'START_OVER'});
         dispatch({type: 'LOAD_WORDLIST', payload: randomWordList});
-        resetTimer();
     };
 
+    // Listen to time changes
     useEffect(() => {
-        window.addEventListener('keydown', processKeydown);
-        return () => window.removeEventListener('keydown', processKeydown);
-    });
-
-    useEffect(() => {
-        const randomWordList = generate(wordCount);
-        dispatch({type: 'LOAD_WORDLIST', payload: randomWordList});
-    }, []);
-
-    useEffect(() => {
-        if (timeLeft <= 0) {
+        if (time <= 0) {
             dispatch({type: 'TIME_OVER'});
         }
-    }, [timeLeft]);
+    }, [time]);
+
+    // Listen to game state changes
+    useEffect(() => {
+        if (state.gameIsActive) {
+            startTimer();
+        } else {
+            stopTimer();
+        }
+    }, [startTimer, state.gameIsActive, stopTimer]);
+
+    // Initialize game
+    useEffect(() => {
+        window.addEventListener('keydown', onKeydown);
+
+        const randomWordList = generate(state.wordCount);
+
+        dispatch({type: 'LOAD_WORDLIST', payload: randomWordList});
+
+        return () => window.removeEventListener('keydown', onKeydown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <div onClick={() => typingInputRef.current?.focus()}>
-            <Timer timeLeft={timeLeft}/>
-            <WordsDisplay words={wordList} currentWordIndex={currentIndex} currentInput={userInput}/>
-            <TypingInput ref={typingInputRef} value={userInput} handleChange={processInputChange}/>
-            <GameControls handleReset={restartGame}/>
+            <WordsDisplay words={state.wordList} currentWordIndex={state.currentIndex} currentInput={state.userInput}/>
+            <TypingInput ref={typingInputRef} value={state.userInput} handleChange={onInput} disabled={time <= 0}/>
+            <div className="flex justify-between">
+                <Timer timeLeft={time}/>
+                <GameControls handleReset={onRestart}/>
+            </div>
         </div>
     );
 };
