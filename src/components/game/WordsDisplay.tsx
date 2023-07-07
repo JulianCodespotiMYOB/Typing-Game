@@ -1,70 +1,147 @@
-import React from 'react';
-import { Word } from '../types/Word';
-import { WordStatus } from '../enums/WordStatus';
+import { Word, WordStatus } from "@/types";
+import React, { useMemo } from "react";
 
-interface WordsDisplayProps {
-    words: Word[];
-    currentWordIndex: number;
-    currentInput: string;
+export type WordsDisplayProps = {
+  words: Word[];
+  currentWordIndex: number;
+  currentInput: string;
 };
 
-const WordsDisplay: React.FC<WordsDisplayProps> = ({ words, currentWordIndex, currentInput }) => {
-    const getLetterStyle = (wordIndex: number, currentLetter: string, word: Word, letterIndex: number) => {
-        let style = 'text-gray-800';
+const determineLetterStyle = (
+  wordIndex: number,
+  currentLetter: string,
+  word: Word,
+  letterIndex: number,
+  currentWordIndex: number,
+  currentInput: string
+) => {
+  let style = "text-gray-800";
 
-        const isCurrentWord = wordIndex === currentWordIndex;
-        const isTypedInCurrentWord = isCurrentWord && currentInput.length > letterIndex;
-        const isTyped = word.typed.length > letterIndex;
-        const isSkippedWord = word.status === WordStatus.Skipped;
-        const isCompletedWord = word.status === WordStatus.Completed;
+  const isCurrentWord = wordIndex === currentWordIndex;
+  const isTypedInCurrentWord =
+    isCurrentWord && currentInput.length > letterIndex;
+  const isTyped = word.typed.length > letterIndex;
+  const isSkippedWord = word.status === WordStatus.Skipped;
+  const isCompletedWord = word.status === WordStatus.Completed;
 
-        if (isTyped) {
-            style = currentLetter === word.typed[letterIndex] ? 'text-white' : 'text-red-500';
-        } 
+  if (isTyped) {
+    style =
+      currentLetter === word.typed[letterIndex] ? "text-white" : "text-red-500";
+  }
 
-        if (isTypedInCurrentWord) {
-            style = currentLetter === currentInput[letterIndex] ? 'text-white' : 'text-red-500';
-        }
+  if (isTypedInCurrentWord) {
+    style =
+      currentLetter === currentInput[letterIndex]
+        ? "text-white"
+        : "text-red-500";
+  }
 
-        if (isSkippedWord) {
-          style += ' text-gray-800 underline decoration-red-700';
-        }
-        else if (isCompletedWord) {
-          style = 'text-white';
-        }
-        return style;
-    };
+  if (isSkippedWord) {
+    style += " text-gray-800 underline decoration-red-700";
+  } else if (isCompletedWord) {
+    style = "text-white";
+  }
+  return style;
+};
 
-    const isCurrentWord = (wordIndex: number) => wordIndex === currentWordIndex;
+const WordsDisplay: React.FC<WordsDisplayProps> = ({
+  words,
+  currentWordIndex,
+  currentInput,
+}) => {
+  const wordsRenderData = useMemo(() => {
+    return words.map((word, wordIndex) => {
+      return {
+        word,
+        wordIndex,
+        letters: word.text.split("").map((currentLetter, letterIndex) => {
+          const style = determineLetterStyle(
+            wordIndex,
+            currentLetter,
+            word,
+            letterIndex,
+            currentWordIndex,
+            currentInput
+          );
+          const isStartOfWord =
+            wordIndex === currentWordIndex &&
+            currentInput.length === 0 &&
+            letterIndex === 0;
+          const shouldPlaceCaret =
+            wordIndex === currentWordIndex &&
+            letterIndex === currentInput.length - 1;
+          return {
+            currentLetter,
+            letterIndex,
+            style,
+            isStartOfWord,
+            shouldPlaceCaret,
+          };
+        }),
+      };
+    });
+  }, [words, currentWordIndex, currentInput]);
 
-    const exceedsCurrentWord = (word: Word) => word.typed.length > word.text.length;
+  const renderLetterAndCaret = (
+    letterToDisplay: JSX.Element,
+    shouldPlaceCaret: boolean,
+    isStartOfWord: boolean
+  ) => {
+    const caret = <span className="caret"></span>;
+    return shouldPlaceCaret ? (
+      <>
+        {letterToDisplay}
+        {caret}
+      </>
+    ) : isStartOfWord ? (
+      <>
+        {caret}
+        {letterToDisplay}
+      </>
+    ) : (
+      letterToDisplay
+    );
+  };
 
-    const exceededWordsStyle = (word: Word) => {
-        let style = 'text-red-500';
-        if (word.status === WordStatus.Skipped) {
-            style += ' underline decoration-red-700';
-        }
-        return style;
-    }
-
-    return (
-      <div className="p-4 text-center text-3xl font-mono">
-          {words.map((word, wordIndex) => (
-              <span key={wordIndex}>
-                  {word.text.split('').map((currentLetter: string, letterIndex: number) => {
-                      const style = getLetterStyle(wordIndex, currentLetter, word, letterIndex);
-                      const isStartOfWord = isCurrentWord(wordIndex) && currentInput.length === 0 && letterIndex === 0;
-                      const shouldPlaceCaret = isCurrentWord(wordIndex) && letterIndex === currentInput.length - 1;
-                      const letterToDisplay = <span key={letterIndex} className={style}>{currentLetter}</span>;
-                      const caret = <span className="caret"></span>;
-                      return shouldPlaceCaret ? [letterToDisplay, caret] : (isStartOfWord ? [caret, letterToDisplay] : letterToDisplay);
-                  })}
-                  {exceedsCurrentWord(word) &&
-                      <span className={exceededWordsStyle(word)}>{word.typed.slice(word.text.length)}</span>}
-                  <span> </span>
-              </span>
-          ))}
-      </div>
+  return (
+    <div className="p-4 text-center text-3xl font-mono">
+      {wordsRenderData.map(({ word, wordIndex, letters }) => (
+        <span key={wordIndex}>
+          {letters.map(
+            ({
+              currentLetter,
+              letterIndex,
+              style,
+              isStartOfWord,
+              shouldPlaceCaret,
+            }) => {
+              const letterToDisplay = (
+                <span key={letterIndex} className={style}>
+                  {currentLetter}
+                </span>
+              );
+              return renderLetterAndCaret(
+                letterToDisplay,
+                shouldPlaceCaret,
+                isStartOfWord
+              );
+            }
+          )}
+          {word.typed.length > word.text.length && (
+            <span
+              className={`text-red-500 ${
+                word.status === WordStatus.Skipped
+                  ? "underline decoration-red-700"
+                  : ""
+              }`}
+            >
+              {word.typed.slice(word.text.length)}
+            </span>
+          )}
+          <span> </span>
+        </span>
+      ))}
+    </div>
   );
 };
 

@@ -3,11 +3,11 @@ import Link from 'next/link';
 
 const Header: React.FC = () => {
     return (
-        <header className="bg-blue-600 text-white py-4 px-6">
+        <header className="text-gray-300 py-2.5 px-6">
             <div className="flex justify-between items-center">
-                <Link href="/">Typing Game</Link>
+                <Link className="font-bold text-2xl ml-10 mt-5" href="/">Typing Game</Link>
                 <nav>
-                    <ul className="flex space-x-4">
+                    <ul className="flex space-x-4 mt-10 mr-10">
                         <li>
                             <Link href="/profile">Profile</Link>
                         </li>

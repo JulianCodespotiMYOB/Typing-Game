@@ -1,4 +1,6 @@
-type GameControlsProps = {
+import React from "react";
+
+export type GameControlsProps = {
   handleReset: () => void;
 };
 
