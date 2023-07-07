@@ -1,9 +1,10 @@
-export { default as Footer } from "./layout/footer";
-export { default as Header } from "./layout/header";
-export { default as Layout } from "./layout/layout";
+export { default as Footer } from "./layout/Footer";
+export { default as Header } from "./layout/Header";
+export { default as Layout } from "./layout/Layout";
 
-export { default as Game } from "./game/game";
-export { default as GameControls } from "./game/gameControls";
-export { default as Timer } from "./game/timer";
-export { default as TypingInput } from "./game/typingInput";
-export { default as WordsDisplay } from "./game/wordsDisplay";
+export { default as Game } from "./game/Game";
+export { default as GameControls } from "./game/GameControls";
+export { default as Timer } from "./game/Timer";
+export { default as TypingInput } from "./game/TypingInput";
+export { default as WordsDisplay } from "./game/WordsDisplay";
+export { default as Settings } from "./game/GameSettings";

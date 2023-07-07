@@ -1,21 +1,31 @@
+export interface Word {
+  text: string;
+  status: WordStatus;
+  typed: string;
+}
+
 import { WordStatus } from "@/types/WordStatus";
 import { GameState } from "@/types/GameState";
-import { Word } from "@/types/Word";
 
 type GameAction =
   | { type: "INPUT"; payload: string }
   | { type: "START" }
   | { type: "SKIP" }
+  | { type: "SET_TIME"; payload: number }
   | { type: "DELETE" }
   | { type: "DELETE_WORD" }
   | { type: "START_OVER" }
   | { type: "LOAD_WORDLIST"; payload: string[] }
-  | { type: "TIME_OVER" };
+  | { type: "FINISH_GAME" };
 
 const gameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
     case "LOAD_WORDLIST": {
-      const wordList = action.payload.map((word) => ({ text: word, status: WordStatus.Untyped, typed: "" }));
+      const wordList = action.payload.map((word) => ({
+        text: word,
+        status: WordStatus.Untyped,
+        typed: "",
+      }));
       return { ...state, wordList };
     }
 
@@ -24,7 +34,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       const currentWord: Word = { ...wordList[state.currentIndex] };
       currentWord.status = WordStatus.Typing;
       wordList[state.currentIndex] = currentWord;
-      return { ...state, gameIsActive: true, wordList };
+      return { ...state, gameIsActive: true, wordList, gameIsFinished: false };
     }
 
     case "INPUT": {
@@ -32,14 +42,21 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       const currentWord: Word = { ...wordList[state.currentIndex] };
       currentWord.typed = action.payload;
       wordList[state.currentIndex] = currentWord;
-      return { ...state, userInput: action.payload, wordList };
+
+      return {
+        ...state,
+        userInput: action.payload,
+        wordList,
+      };
     }
 
     case "SKIP": {
       const wordList = [...state.wordList];
       const currentWord: Word = { ...wordList[state.currentIndex] };
       const wordIsCompleted = currentWord.typed === currentWord.text;
-      currentWord.status = wordIsCompleted ? WordStatus.Completed : WordStatus.Skipped;
+      currentWord.status = wordIsCompleted
+        ? WordStatus.Completed
+        : WordStatus.Skipped;
 
       wordList[state.currentIndex] = currentWord;
       return {
@@ -113,13 +130,22 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         ...state,
         currentIndex: 0,
         userInput: "",
-        userScore: 0,
         gameIsActive: false,
+        gameIsFinished: false,
       };
     }
 
-    case "TIME_OVER":
-      return { ...state, gameIsActive: false };
+    case "FINISH_GAME": {
+      return {
+        ...state,
+        gameIsActive: false,
+        gameIsFinished: true,
+      };
+    }
+
+    case "SET_TIME": {
+      return { ...state, totalTime: action.payload };
+    }
 
     default:
       return state;

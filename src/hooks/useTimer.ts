@@ -32,7 +32,11 @@ const useTimer = (initialTime: number) => {
     setTime(initialTime);
   };
 
-  return { startTimer, stopTimer: pauseTimer, time, resetTimer };
+  useEffect(() => {
+    setTime(initialTime);
+  }, [initialTime]);
+
+  return { startTimer, stopTimer: pauseTimer, time, setTime, resetTimer };
 };
 
 export default useTimer;
