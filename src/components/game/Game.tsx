@@ -61,16 +61,12 @@ const Game: React.FC = () => {
       dispatch({ type: "DELETE" });
     }
 
-    const isWordDeletionKeyCombination =
-      (isBackspace && ctrlKey) ||
-      (isDelete && altKey) ||
-      (isBackspace && altKey);
+    const isWordDeletionKeyCombination = (isBackspace && ctrlKey) || (isDelete && altKey) || (isBackspace && altKey);
     if (isWordDeletionKeyCombination) {
       dispatch({ type: "DELETE_WORD" });
     }
 
-    const isEntireLineDeletionKeyCombination =
-      (isBackspace || isDelete) && metaKey;
+    const isEntireLineDeletionKeyCombination = (isBackspace || isDelete) && metaKey;
     if (isEntireLineDeletionKeyCombination) {
       dispatch({ type: "DELETE_WORD" });
     }
@@ -134,44 +130,32 @@ const Game: React.FC = () => {
   }, [state.wordCount]);
 
   return (
-    <div onClick={() => typingInputRef.current?.focus()}>
-      {!state.gameIsActive && !state.gameIsFinished && (
-        <GameSettings handleTimeChange={handleTimeChange} />
-      )}
+    <>
       {!state.gameIsFinished && (
-        <>
-          <WordsDisplay
-            words={state.wordList}
-            currentWordIndex={state.currentIndex}
-            currentInput={state.userInput}
-          />
-          <TypingInput
-            ref={typingInputRef}
-            value={state.userInput}
-            handleChange={onInput}
-            disabled={time <= 0}
-          />
+        <div onClick={() => typingInputRef.current?.focus()}>
+          {!state.gameIsActive && !state.gameIsFinished && <GameSettings handleTimeChange={handleTimeChange} />}
+
+          <WordsDisplay words={state.wordList} currentWordIndex={state.currentIndex} currentInput={state.userInput} />
+          <TypingInput ref={typingInputRef} value={state.userInput} handleChange={onInput} disabled={time <= 0} />
           <div className="flex justify-between">
             <Timer timeLeft={time} />
             <GameControls handleReset={onRestart} />
           </div>
-        </>
+        </div>
       )}
+
       {state.gameIsFinished && (
-        <>
-          <EndGameSettings
-            handleNextGame={handleNextGame}
-            handleRepeatGame={handleRepeatGame}
-          />
+        <div className="w-full">
+          <EndGameSettings handleNextGame={handleNextGame} handleRepeatGame={handleRepeatGame} />
           <GameStatistics
             wpm={gameStats.wpm}
             rawWpm={gameStats.rawWpm}
             accuracy={gameStats.accuracy}
             time={gameStats.time}
           />
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
