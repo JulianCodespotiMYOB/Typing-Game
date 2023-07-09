@@ -11,7 +11,6 @@ type GameAction =
   | { type: "INPUT"; payload: string }
   | { type: "START" }
   | { type: "SKIP" }
-  | { type: "SET_TIME"; payload: number }
   | { type: "DELETE" }
   | { type: "DELETE_WORD" }
   | { type: "START_OVER" }
@@ -54,9 +53,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       const wordList = [...state.wordList];
       const currentWord: Word = { ...wordList[state.currentIndex] };
       const wordIsCompleted = currentWord.typed === currentWord.text;
-      currentWord.status = wordIsCompleted
-        ? WordStatus.Completed
-        : WordStatus.Skipped;
+      currentWord.status = wordIsCompleted ? WordStatus.Completed : WordStatus.Skipped;
 
       wordList[state.currentIndex] = currentWord;
       return {
@@ -141,10 +138,6 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         gameIsActive: false,
         gameIsFinished: true,
       };
-    }
-
-    case "SET_TIME": {
-      return { ...state, totalTime: action.payload };
     }
 
     default:
