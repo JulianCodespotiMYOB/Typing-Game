@@ -27,9 +27,17 @@ body {
 
 .caret {
     border-left: 2px solid;
-    animation: caret 1s steps(1) infinite;
+    animation: caret 0.8s infinite;
 }
 
 @keyframes caret {
-    50% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }

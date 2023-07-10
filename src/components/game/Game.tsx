@@ -94,6 +94,10 @@ const Game: React.FC = () => {
     dispatch({ type: "START_OVER" });
   };
 
+  const onFocus = (): void => {
+    typingInputRef.current?.focus();
+  };
+
   useEffect((): void => {
     if (time <= 0) {
       dispatch({ type: "FINISH_GAME" });
@@ -131,15 +135,15 @@ const Game: React.FC = () => {
     <>
       {!state.gameIsFinished && (
         <div className="flex flex-col items-center justify-center h-full">
-          {!state.gameIsActive && !state.gameIsFinished && (
-            <GameSettings
-              handleTimeChange={handleTimeChange}
-              handleLanguageChange={handleLanguageChange}
-              currentTime={settings.totalTime}
-              currentLanguage={settings.wordListStyle}
-            />
-          )}
-          <div onClick={() => typingInputRef.current?.focus()}>
+          <GameSettings
+            handleTimeChange={handleTimeChange}
+            handleLanguageChange={handleLanguageChange}
+            currentTime={settings.totalTime}
+            currentLanguage={settings.wordListStyle}
+            isVisible={!state.gameIsActive}
+          />
+
+          <div onClick={onFocus}>
             <WordsDisplay words={state.wordList} currentWordIndex={state.currentIndex} currentInput={state.userInput} />
             <TypingInput ref={typingInputRef} value={state.userInput} handleChange={onInput} disabled={time <= 0} />
             <div className="flex justify-between">

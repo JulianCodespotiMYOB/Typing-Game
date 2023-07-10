@@ -6,6 +6,7 @@ export type SettingsProps = {
   currentTime: number;
   handleLanguageChange: (lang: Language) => void;
   currentLanguage: Language;
+  isVisible: boolean;
 };
 
 const ShortToLongLanguageMap: Record<Language, string> = {
@@ -19,39 +20,47 @@ const GameSettings: React.FC<SettingsProps> = ({
   handleLanguageChange,
   currentTime,
   currentLanguage,
+  isVisible,
 }) => {
   const times = [15, 30, 45, 60, 90, 120];
   const languages: Language[] = ["en", "es", "it"];
 
+  const createLanguageOptions = () =>
+    languages.map((lang) => (
+      <option key={lang} value={lang}>
+        {ShortToLongLanguageMap[lang]}
+      </option>
+    ));
+  
+  const createTimeOptions = () =>
+    times.map((time) => (
+      <option key={time} value={time}>
+        {time}
+      </option>
+    ));
+
   return (
-    <div className="settings-bar flex justify-start space-x-5 px-4 py-2 rounded-lg h-full w-full bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10">
+    <div className={`flex justify-start space-x-5 px-4 py-2 rounded-lg h-full w-full bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
       <div className="flex items-center">
-        <span className="text-white mr-2">Language:</span>
+        <label className="text-white mr-2">Language</label>
         <select
           className="bg-gray-800 text-white px-2 py-1 rounded-lg"
           value={currentLanguage}
           onChange={(e) => handleLanguageChange(e.target.value as Language)}
         >
-          {languages.map((lang) => (
-            <option key={lang} value={lang}>
-              {ShortToLongLanguageMap[lang]}
-            </option>
-          ))}
+          {createLanguageOptions()}
         </select>
+        <span className="ml-7 border-l-2 border-gray-600 mx-2 h-6"></span>
       </div>
 
       <div className="flex items-center">
-        <span className="text-white mr-2">Time:</span>
+        <label className="text-white mr-2">Time</label>
         <select
           className="bg-gray-800 text-white px-2 py-1 rounded-lg"
           value={currentTime}
           onChange={(e) => handleTimeChange(Number(e.target.value))}
         >
-          {times.map((time) => (
-            <option key={time} value={time}>
-              {time}
-            </option>
-          ))}
+          {createTimeOptions()}
         </select>
       </div>
     </div>
