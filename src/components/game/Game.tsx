@@ -2,15 +2,15 @@
 
 import React, {
   ChangeEvent,
+  useCallback,
   useEffect,
   useReducer,
   useRef,
   useState,
 } from "react";
-import { generate } from "random-words";
 
 import { gameReducer, useTimer } from "@/hooks";
-import { InitialGameState } from "@/types";
+import { GameSettings as GameSettingsT, InitialGameSettings, InitialGameState, Language } from "@/types";
 
 import Timer from "./Timer";
 import WordsDisplay from "./WordsDisplay";
@@ -19,21 +19,24 @@ import GameControls from "./GameControls";
 import GameSettings from "./GameSettings";
 import EndGameSettings from "@/components/game/EndGameSettings";
 import GameStatistics from "@/components/game/GameStatistics";
-import { calculateGameStatistics } from "@/calculations/gameStatistics";
+import { calculateGameStatistics, createWords } from "@/calculations/gameStatistics";
 
 const Game: React.FC = () => {
+  const [settings, setSettings] = useState<GameSettingsT>(InitialGameSettings);
   const [state, dispatch] = useReducer(gameReducer, InitialGameState);
+  const [gameStats, setGameStats] = useState({ wpm: 0, rawWpm: 0, accuracy: 0, time: 0 });
 
-  const [gameStats, setGameStats] = useState({
-    wpm: 0,
-    rawWpm: 0,
-    accuracy: 0,
-    time: 0,
-  });
-
-  const { startTimer, stopTimer, resetTimer, time } = useTimer(state.totalTime);
+  const { startTimer, stopTimer, resetTimer, time } = useTimer(settings.totalTime);
 
   const typingInputRef = useRef<HTMLInputElement>(null);
+
+  const onSetupGame = useCallback((): void => {
+    createWords(settings.wordCount, settings.wordListStyle).then((words) => {
+      resetTimer();
+      dispatch({ type: "START_OVER" });
+      dispatch({ type: "LOAD_WORDLIST", payload: words });
+    });
+  }, [resetTimer, settings.wordCount, settings.wordListStyle]);
 
   const onInput = (event: ChangeEvent<HTMLInputElement>): void => {
     if (!state.gameIsActive) {
@@ -61,51 +64,46 @@ const Game: React.FC = () => {
       dispatch({ type: "DELETE" });
     }
 
-    const isWordDeletionKeyCombination =
-      (isBackspace && ctrlKey) ||
-      (isDelete && altKey) ||
-      (isBackspace && altKey);
+    const isWordDeletionKeyCombination = (isBackspace && ctrlKey) || (isDelete && altKey) || (isBackspace && altKey);
     if (isWordDeletionKeyCombination) {
       dispatch({ type: "DELETE_WORD" });
     }
 
-    const isEntireLineDeletionKeyCombination =
-      (isBackspace || isDelete) && metaKey;
+    const isEntireLineDeletionKeyCombination = (isBackspace || isDelete) && metaKey;
     if (isEntireLineDeletionKeyCombination) {
       dispatch({ type: "DELETE_WORD" });
     }
   };
 
-  const onRestart = (): void => {
-    resetTimer();
-    const randomWordList = generate(state.wordCount);
-    dispatch({ type: "START_OVER" });
-    dispatch({ type: "LOAD_WORDLIST", payload: randomWordList });
-  };
-
   const handleTimeChange = (time: number): void => {
     stopTimer();
-    dispatch({ type: "SET_TIME", payload: time });
+    setSettings({ ...settings, totalTime: time });
     startTimer();
+  };
+
+  const handleLanguageChange = (lang: Language): void => {
+    setSettings({ ...settings, wordListStyle: lang });
   };
 
   const handleNextGame = (): void => {
     dispatch({ type: "START_OVER" });
-    dispatch({ type: "LOAD_WORDLIST", payload: generate(state.wordCount) });
+    onSetupGame();
   };
 
   const handleRepeatGame = (): void => {
     dispatch({ type: "START_OVER" });
   };
 
-  // Listen to time changes
   useEffect((): void => {
     if (time <= 0) {
       dispatch({ type: "FINISH_GAME" });
     }
   }, [time]);
 
-  // Listen to game state changes
+  useEffect((): void => {
+    onSetupGame();
+  }, [settings.wordCount, settings.wordListStyle]);
+
   useEffect((): void => {
     if (state.gameIsActive) {
       startTimer();
@@ -114,64 +112,56 @@ const Game: React.FC = () => {
     }
   }, [startTimer, state.gameIsActive, stopTimer]);
 
-  // Calculate game statistics
   useEffect(() => {
     if (state.gameIsFinished) {
-      const stats = calculateGameStatistics(state.wordList, state.totalTime);
+      const stats = calculateGameStatistics(state.wordList, settings.totalTime);
       setGameStats(stats);
     }
   }, [state.gameIsFinished]);
 
-  // Initialize game
   useEffect(() => {
     window.addEventListener("keydown", onKeydown);
 
-    const randomWordList: string[] = generate(state.wordCount);
-
-    dispatch({ type: "LOAD_WORDLIST", payload: randomWordList });
+    onSetupGame();
 
     return () => window.removeEventListener("keydown", onKeydown);
-  }, [state.wordCount]);
+  }, []);
 
   return (
-    <div onClick={() => typingInputRef.current?.focus()}>
-      {!state.gameIsActive && !state.gameIsFinished && (
-        <GameSettings handleTimeChange={handleTimeChange} />
-      )}
+    <>
       {!state.gameIsFinished && (
-        <>
-          <WordsDisplay
-            words={state.wordList}
-            currentWordIndex={state.currentIndex}
-            currentInput={state.userInput}
-          />
-          <TypingInput
-            ref={typingInputRef}
-            value={state.userInput}
-            handleChange={onInput}
-            disabled={time <= 0}
-          />
-          <div className="flex justify-between">
-            <Timer timeLeft={time} />
-            <GameControls handleReset={onRestart} />
+        <div className="flex flex-col items-center justify-center h-full">
+          {!state.gameIsActive && !state.gameIsFinished && (
+            <GameSettings
+              handleTimeChange={handleTimeChange}
+              handleLanguageChange={handleLanguageChange}
+              currentTime={settings.totalTime}
+              currentLanguage={settings.wordListStyle}
+            />
+          )}
+          <div onClick={() => typingInputRef.current?.focus()}>
+            <WordsDisplay words={state.wordList} currentWordIndex={state.currentIndex} currentInput={state.userInput} />
+            <TypingInput ref={typingInputRef} value={state.userInput} handleChange={onInput} disabled={time <= 0} />
+            <div className="flex justify-between">
+              <Timer timeLeft={time} />
+              <GameControls handleReset={onSetupGame} />
+            </div>
           </div>
-        </>
+        </div>
       )}
+
       {state.gameIsFinished && (
-        <>
-          <EndGameSettings
-            handleNextGame={handleNextGame}
-            handleRepeatGame={handleRepeatGame}
-          />
+        <div className="w-full">
+          <EndGameSettings handleNextGame={handleNextGame} handleRepeatGame={handleRepeatGame} />
           <GameStatistics
             wpm={gameStats.wpm}
             rawWpm={gameStats.rawWpm}
             accuracy={gameStats.accuracy}
             time={gameStats.time}
           />
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

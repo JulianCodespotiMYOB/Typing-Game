@@ -1,13 +1,19 @@
 import { Word } from "./Word";
 
+export type Language = "en" | "es" | "it";
+
 export type GameState = {
   wordList: Word[];
   currentIndex: number;
   userInput: string;
   gameIsActive: boolean;
+  gameIsFinished: boolean;
+};
+
+export type GameSettings = {
+  wordListStyle: Language;
   totalTime: number;
   wordCount: number;
-  gameIsFinished: boolean;
 };
 
 export const InitialGameState: GameState = {
@@ -16,6 +22,6 @@ export const InitialGameState: GameState = {
   userInput: "",
   gameIsActive: false,
   gameIsFinished: false,
-  totalTime: 3,
-  wordCount: 100,
 };
+
+export const InitialGameSettings: GameSettings = { totalTime: 60, wordCount: 100, wordListStyle: "en" };
