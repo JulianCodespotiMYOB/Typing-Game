@@ -27,9 +27,3 @@ export function calculateGameStatistics(wordList: Word[], totalTime: number) {
     time: totalTime,
   };
 }
-
-export async function createWords(wordCount: number, wordStyle: Language): Promise<string[]> {
-  const words = generate(wordCount).join(" ");
-  const translated = await Translate(words, { from: "en", to: wordStyle });
-  return translated.split(" ");
-}

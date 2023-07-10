@@ -19,7 +19,8 @@ import GameControls from "./GameControls";
 import GameSettings from "./GameSettings";
 import EndGameSettings from "@/components/game/EndGameSettings";
 import GameStatistics from "@/components/game/GameStatistics";
-import { calculateGameStatistics, createWords } from "@/calculations/gameStatistics";
+import { calculateGameStatistics } from "@/lib/gameStatistics";
+import { createWords } from "@/lib/wordGenerator";
 
 const Game: React.FC = () => {
   const [settings, setSettings] = useState<GameSettingsT>(InitialGameSettings);
