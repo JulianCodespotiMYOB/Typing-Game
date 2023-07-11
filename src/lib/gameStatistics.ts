@@ -1,14 +1,19 @@
-import { Language, Word, WordStatus } from "@/types";
-import { generate } from "random-words";
-import Translate from "translate";
+import { Word, WordStatus } from '@/types';
 
 export function calculateGameStatistics(wordList: Word[], totalTime: number) {
   const typedWords = wordList.filter((word) => word.typed.length > 0);
 
-  const totalEntries = typedWords.reduce((total, word) => total + word.typed.length, 0);
+  const totalEntries = typedWords.reduce(
+    (total, word) => total + word.typed.length,
+    0
+  );
 
   const correctEntries =
-    typedWords.reduce((total, word) => total + (word.status == WordStatus.Completed ? word.typed.length : 0), 0) +
+    typedWords.reduce(
+      (total, word) =>
+        total + (word.status == WordStatus.Completed ? word.typed.length : 0),
+      0
+    ) +
     typedWords.length -
     1;
   const incorrectEntries = totalEntries - correctEntries;

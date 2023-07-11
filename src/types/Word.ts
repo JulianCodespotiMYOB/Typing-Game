@@ -1,4 +1,4 @@
-import { WordStatus } from "./WordStatus";
+import { WordStatus } from './WordStatus';
 
 export interface Word {
   text: string;

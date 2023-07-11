@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef } from 'react';
 
 export type TypingInputProps = {
   value: string;
@@ -10,17 +10,17 @@ const TypingInput = forwardRef<HTMLInputElement, TypingInputProps>(
   (props, ref) => {
     return (
       <input
-        type="text"
+        type='text'
         value={props.value}
         disabled={props.disabled}
         onChange={props.handleChange}
         ref={ref}
-        className="p-2 w-full rounded shadow-md mt-6 opacity-0"
+        className='p-2 w-full rounded shadow-md mt-6 opacity-0'
       />
     );
   }
 );
 
-TypingInput.displayName = "TypingInput";
+TypingInput.displayName = 'TypingInput';
 
 export default TypingInput;

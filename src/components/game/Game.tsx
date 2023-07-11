@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, {
   ChangeEvent,
@@ -7,72 +7,88 @@ import React, {
   useReducer,
   useRef,
   useState,
-} from "react";
+} from 'react';
 
-import { gameReducer, useTimer } from "@/hooks";
-import { GameSettings as GameSettingsT, InitialGameSettings, InitialGameState, Language } from "@/types";
+import { gameReducer, useTimer } from '@/hooks';
+import {
+  GameSettings as GameSettingsT,
+  InitialGameSettings,
+  InitialGameState,
+  Language,
+} from '@/types';
 
-import Timer from "./Timer";
-import WordsDisplay from "./WordsDisplay";
-import TypingInput from "./TypingInput";
-import GameControls from "./GameControls";
-import GameSettings from "./GameSettings";
-import EndGameSettings from "@/components/game/EndGameSettings";
-import GameStatistics from "@/components/game/GameStatistics";
-import { calculateGameStatistics } from "@/lib/gameStatistics";
-import { createWords } from "@/lib/wordGenerator";
+import Timer from './Timer';
+import WordsDisplay from './WordsDisplay';
+import TypingInput from './TypingInput';
+import GameControls from './GameControls';
+import GameSettings from './GameSettings';
+import EndGameSettings from '@/components/game/EndGameSettings';
+import GameStatistics from '@/components/game/GameStatistics';
+import { calculateGameStatistics } from '@/lib/gameStatistics';
+import { createWords } from '@/lib/wordGenerator';
 
 const Game: React.FC = () => {
   const [settings, setSettings] = useState<GameSettingsT>(InitialGameSettings);
   const [state, dispatch] = useReducer(gameReducer, InitialGameState);
-  const [gameStats, setGameStats] = useState({ wpm: 0, rawWpm: 0, accuracy: 0, time: 0 });
+  const [gameStats, setGameStats] = useState({
+    wpm: 0,
+    rawWpm: 0,
+    accuracy: 0,
+    time: 0,
+  });
 
-  const { startTimer, stopTimer, resetTimer, time } = useTimer(settings.totalTime);
+  const { startTimer, stopTimer, resetTimer, time } = useTimer(
+    settings.totalTime
+  );
 
   const typingInputRef = useRef<HTMLInputElement>(null);
 
   const onSetupGame = useCallback((): void => {
     createWords(settings.wordCount, settings.wordListStyle).then((words) => {
       resetTimer();
-      dispatch({ type: "START_OVER" });
-      dispatch({ type: "LOAD_WORDLIST", payload: words });
+      dispatch({ type: 'START_OVER' });
+      dispatch({ type: 'LOAD_WORDLIST', payload: words });
     });
   }, [resetTimer, settings.wordCount, settings.wordListStyle]);
 
   const onInput = (event: ChangeEvent<HTMLInputElement>): void => {
     if (!state.gameIsActive) {
-      dispatch({ type: "START" });
+      dispatch({ type: 'START' });
     }
 
     const input = event.target.value;
     const lastKeyPressed = (event.nativeEvent as InputEvent).data;
 
-    if (lastKeyPressed === " ") {
-      dispatch({ type: "SKIP" });
+    if (lastKeyPressed === ' ') {
+      dispatch({ type: 'SKIP' });
     } else if (lastKeyPressed) {
-      dispatch({ type: "INPUT", payload: input });
+      dispatch({ type: 'INPUT', payload: input });
     }
   };
 
   const onKeydown = (event: KeyboardEvent): void => {
     const { key, ctrlKey, altKey, metaKey } = event;
 
-    const isBackspace = key === "Backspace";
-    const isDelete = key === "Delete";
+    const isBackspace = key === 'Backspace';
+    const isDelete = key === 'Delete';
 
     const isRegularBackspace = isBackspace && !(ctrlKey || altKey || metaKey);
     if (isRegularBackspace) {
-      dispatch({ type: "DELETE" });
+      dispatch({ type: 'DELETE' });
     }
 
-    const isWordDeletionKeyCombination = (isBackspace && ctrlKey) || (isDelete && altKey) || (isBackspace && altKey);
+    const isWordDeletionKeyCombination =
+      (isBackspace && ctrlKey) ||
+      (isDelete && altKey) ||
+      (isBackspace && altKey);
     if (isWordDeletionKeyCombination) {
-      dispatch({ type: "DELETE_WORD" });
+      dispatch({ type: 'DELETE_WORD' });
     }
 
-    const isEntireLineDeletionKeyCombination = (isBackspace || isDelete) && metaKey;
+    const isEntireLineDeletionKeyCombination =
+      (isBackspace || isDelete) && metaKey;
     if (isEntireLineDeletionKeyCombination) {
-      dispatch({ type: "DELETE_WORD" });
+      dispatch({ type: 'DELETE_WORD' });
     }
   };
 
@@ -87,12 +103,12 @@ const Game: React.FC = () => {
   };
 
   const handleNextGame = (): void => {
-    dispatch({ type: "START_OVER" });
+    dispatch({ type: 'START_OVER' });
     onSetupGame();
   };
 
   const handleRepeatGame = (): void => {
-    dispatch({ type: "START_OVER" });
+    dispatch({ type: 'START_OVER' });
   };
 
   const onFocus = (): void => {
@@ -101,7 +117,7 @@ const Game: React.FC = () => {
 
   useEffect((): void => {
     if (time <= 0) {
-      dispatch({ type: "FINISH_GAME" });
+      dispatch({ type: 'FINISH_GAME' });
     }
   }, [time]);
 
@@ -125,17 +141,17 @@ const Game: React.FC = () => {
   }, [state.gameIsFinished]);
 
   useEffect(() => {
-    window.addEventListener("keydown", onKeydown);
+    window.addEventListener('keydown', onKeydown);
 
     onSetupGame();
 
-    return () => window.removeEventListener("keydown", onKeydown);
+    return () => window.removeEventListener('keydown', onKeydown);
   }, []);
 
   return (
     <>
       {!state.gameIsFinished && (
-        <div className="flex flex-col items-center justify-center h-full">
+        <div className='flex flex-col items-center justify-center h-full'>
           <GameSettings
             handleTimeChange={handleTimeChange}
             handleLanguageChange={handleLanguageChange}
@@ -145,9 +161,18 @@ const Game: React.FC = () => {
           />
 
           <div onClick={onFocus}>
-            <WordsDisplay words={state.wordList} currentWordIndex={state.currentIndex} currentInput={state.userInput} />
-            <TypingInput ref={typingInputRef} value={state.userInput} handleChange={onInput} disabled={time <= 0} />
-            <div className="flex justify-between">
+            <WordsDisplay
+              words={state.wordList}
+              currentWordIndex={state.currentIndex}
+              currentInput={state.userInput}
+            />
+            <TypingInput
+              ref={typingInputRef}
+              value={state.userInput}
+              handleChange={onInput}
+              disabled={time <= 0}
+            />
+            <div className='flex justify-between'>
               <Timer timeLeft={time} />
               <GameControls handleReset={onSetupGame} />
             </div>
@@ -156,8 +181,11 @@ const Game: React.FC = () => {
       )}
 
       {state.gameIsFinished && (
-        <div className="w-full">
-          <EndGameSettings handleNextGame={handleNextGame} handleRepeatGame={handleRepeatGame} />
+        <div className='w-full'>
+          <EndGameSettings
+            handleNextGame={handleNextGame}
+            handleRepeatGame={handleRepeatGame}
+          />
           <GameStatistics
             wpm={gameStats.wpm}
             rawWpm={gameStats.rawWpm}
