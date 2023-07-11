@@ -14,7 +14,7 @@ const GameStatistics: React.FC<GameStatisticsProps> = ({
   time,
 }) => {
   return (
-    <div className="shadow-lg rounded-lg px-4 py-6 max-w-sm mx-auto">
+    <div className="rounded-lg px-4 py-6 max-w-sm mx-auto">
       <h2 className="font-bold text-3xl mb-4 text-white-800 animate-pulse">
         Game Statistics
       </h2>

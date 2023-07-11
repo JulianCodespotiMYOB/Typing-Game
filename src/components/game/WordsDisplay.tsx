@@ -7,6 +7,20 @@ export type WordsDisplayProps = {
   currentInput: string;
 };
 
+type LetterRenderData = {
+  currentLetter: string;
+  letterIndex: number;
+  style: string;
+  isStartOfWord: boolean;
+  shouldPlaceCaret: boolean;
+};
+
+type WordRenderData = {
+  word: Word;
+  wordIndex: number;
+  letters: LetterRenderData[];
+};
+
 const determineLetterStyle = (
   wordIndex: number,
   currentLetter: string,
@@ -15,61 +29,41 @@ const determineLetterStyle = (
   currentWordIndex: number,
   currentInput: string
 ) => {
-  let style = "text-gray-800";
+  let style = "text-gray-500";
 
   const isCurrentWord = wordIndex === currentWordIndex;
-  const isTypedInCurrentWord =
-    isCurrentWord && currentInput.length > letterIndex;
+  const isTypedInCurrentWord = isCurrentWord && currentInput.length > letterIndex;
   const isTyped = word.typed.length > letterIndex;
   const isSkippedWord = word.status === WordStatus.Skipped;
   const isCompletedWord = word.status === WordStatus.Completed;
 
   if (isTyped) {
-    style =
-      currentLetter === word.typed[letterIndex] ? "text-white" : "text-red-500";
+    style = currentLetter === word.typed[letterIndex] ? "text-white" : "text-red-500";
   }
 
   if (isTypedInCurrentWord) {
-    style =
-      currentLetter === currentInput[letterIndex]
-        ? "text-white"
-        : "text-red-500";
+    style = currentLetter === currentInput[letterIndex] ? "text-white" : "text-red-500";
   }
 
   if (isSkippedWord) {
     style += " text-gray-800 underline decoration-red-700";
-  } else if (isCompletedWord) {
+  }
+  
+  if (isCompletedWord) {
     style = "text-white";
   }
+
   return style;
 };
 
-const WordsDisplay: React.FC<WordsDisplayProps> = ({
-  words,
-  currentWordIndex,
-  currentInput,
-}) => {
+const WordsDisplay: React.FC<WordsDisplayProps> = ({ words, currentWordIndex, currentInput }) => {
   const wordsRenderData = useMemo(() => {
     return words.map((word, wordIndex) => {
-      return {
-        word,
-        wordIndex,
-        letters: word.text.split("").map((currentLetter, letterIndex) => {
-          const style = determineLetterStyle(
-            wordIndex,
-            currentLetter,
-            word,
-            letterIndex,
-            currentWordIndex,
-            currentInput
-          );
-          const isStartOfWord =
-            wordIndex === currentWordIndex &&
-            currentInput.length === 0 &&
-            letterIndex === 0;
-          const shouldPlaceCaret =
-            wordIndex === currentWordIndex &&
-            letterIndex === currentInput.length - 1;
+      const letters: LetterRenderData[] = word.text.split("").map((currentLetter, letterIndex) => {
+          const style = determineLetterStyle(wordIndex, currentLetter, word, letterIndex, currentWordIndex, currentInput);
+          const isStartOfWord = wordIndex === currentWordIndex && currentInput.length === 0 && letterIndex === 0;
+          const shouldPlaceCaret = wordIndex === currentWordIndex && letterIndex === currentInput.length - 1;
+
           return {
             currentLetter,
             letterIndex,
@@ -77,16 +71,13 @@ const WordsDisplay: React.FC<WordsDisplayProps> = ({
             isStartOfWord,
             shouldPlaceCaret,
           };
-        }),
-      };
+      });
+
+      return ({ word, wordIndex, letters }) as WordRenderData;
     });
   }, [words, currentWordIndex, currentInput]);
 
-  const renderLetterAndCaret = (
-    letterToDisplay: JSX.Element,
-    shouldPlaceCaret: boolean,
-    isStartOfWord: boolean
-  ) => {
+  const renderLetterAndCaret = (letterToDisplay: JSX.Element, shouldPlaceCaret: boolean, isStartOfWord: boolean) => {
     const caret = <span className="caret"></span>;
     return shouldPlaceCaret ? (
       <>
@@ -103,41 +94,33 @@ const WordsDisplay: React.FC<WordsDisplayProps> = ({
     );
   };
 
+  const displayLetters = (letters: LetterRenderData[]) => {
+    return letters.map(({ currentLetter, letterIndex, style, isStartOfWord, shouldPlaceCaret }) => {
+      const letterToDisplay = (
+        <span key={letterIndex} className={style}>
+          {currentLetter}
+        </span>
+      );
+      return renderLetterAndCaret(letterToDisplay, shouldPlaceCaret, isStartOfWord);
+    });
+  };
+
+  const displayErrors = (word: Word) => {
+    return (
+      word.typed.length > word.text.length && (
+        <span className={`text-red-500 ${word.status === WordStatus.Skipped ? "underline decoration-red-700" : ""}`}>
+          {word.typed.slice(word.text.length)}
+        </span>
+      )
+    );
+  };
+
   return (
     <div className="p-4 text-center text-3xl font-mono">
       {wordsRenderData.map(({ word, wordIndex, letters }) => (
         <span key={wordIndex}>
-          {letters.map(
-            ({
-              currentLetter,
-              letterIndex,
-              style,
-              isStartOfWord,
-              shouldPlaceCaret,
-            }) => {
-              const letterToDisplay = (
-                <span key={letterIndex} className={style}>
-                  {currentLetter}
-                </span>
-              );
-              return renderLetterAndCaret(
-                letterToDisplay,
-                shouldPlaceCaret,
-                isStartOfWord
-              );
-            }
-          )}
-          {word.typed.length > word.text.length && (
-            <span
-              className={`text-red-500 ${
-                word.status === WordStatus.Skipped
-                  ? "underline decoration-red-700"
-                  : ""
-              }`}
-            >
-              {word.typed.slice(word.text.length)}
-            </span>
-          )}
+          {displayLetters(letters)}
+          {displayErrors(word)}
           <span> </span>
         </span>
       ))}
