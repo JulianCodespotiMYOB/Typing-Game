@@ -5,7 +5,7 @@ interface Props {
   onChangePassword: (e: React.ChangeEvent<HTMLInputElement>) => void;
   email: string;
   password: string;
-  buttonText: string;
+  authType: 'login' | 'register';
   extraInfo?: React.ReactNode;
 }
 
@@ -16,9 +16,12 @@ const AuthForm = ({
   onChangePassword,
   email,
   password,
-  buttonText,
+  authType,
   extraInfo,
 }: Props) => {
+  const buttonText = authType === 'login' ? 'Login' : 'Register';
+  const titleText = authType === 'login' ? 'Login' : 'Sign Up';
+
   if (isLoading) {
     return <div className='spinner'></div>;
   }
@@ -30,7 +33,7 @@ const AuthForm = ({
         onSubmit={handleAuth}
       >
         <div className='text-2xl flex justify-center border-b-2 py-2 mb-4 text-white'>
-          Login
+          {titleText}
         </div>
         <div className='mb-4'>
           <label

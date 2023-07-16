@@ -61,7 +61,7 @@ const Page = () => {
         onChangePassword={onChangePassword}
         email={email}
         password={password}
-        buttonText='Login'
+        authType='register'
         extraInfo={extraInfo}
       />
 

@@ -59,7 +59,7 @@ const LoginPage: React.FC = () => {
         onChangePassword={onChangePassword}
         email={email}
         password={password}
-        buttonText='Login'
+        authType='login'
         extraInfo={extraInfo}
       />
 
