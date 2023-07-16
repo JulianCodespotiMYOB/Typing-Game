@@ -34,4 +34,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+.idea
+.idea/workspace.xml
 .env.local
+.env
+.gitignore
+.idea/prettier.xml
