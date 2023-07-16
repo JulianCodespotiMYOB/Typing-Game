@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { supabase } from '@/lib/supabase';
 import React, { useState } from 'react';
@@ -25,7 +25,10 @@ const Page = () => {
   return (
     <div className='flex justify-center items-center min-h-screen bg-gray-900'>
       <div className='w-full max-w-md'>
-        <form className='bg-gray-800 shadow-lg rounded px-12 pt-6 pb-8 mb-4' onSubmit={handleSignUp}>
+        <form
+          className='bg-gray-800 shadow-lg rounded px-12 pt-6 pb-8 mb-4'
+          onSubmit={handleSignUp}
+        >
           <div className='text-2xl flex justify-center border-b-2 py-2 mb-4 text-white'>
             Register
           </div>
@@ -79,6 +82,6 @@ const Page = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Page;

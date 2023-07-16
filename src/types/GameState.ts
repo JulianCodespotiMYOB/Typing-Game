@@ -1,6 +1,6 @@
-import { Word } from "./Word";
+import { Word } from './Word';
 
-export type Language = "en" | "es" | "it";
+export type Language = 'en' | 'es' | 'it';
 
 export type GameState = {
   wordList: Word[];
@@ -19,9 +19,13 @@ export type GameSettings = {
 export const InitialGameState: GameState = {
   wordList: [],
   currentIndex: 0,
-  userInput: "",
+  userInput: '',
   gameIsActive: false,
   gameIsFinished: false,
 };
 
-export const InitialGameSettings: GameSettings = { totalTime: 60, wordCount: 100, wordListStyle: "en" };
+export const InitialGameSettings: GameSettings = {
+  totalTime: 60,
+  wordCount: 100,
+  wordListStyle: 'en',
+};
