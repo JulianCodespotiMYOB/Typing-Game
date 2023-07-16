@@ -27,7 +27,7 @@ const determineLetterStyle = (
   word: Word,
   letterIndex: number,
   currentWordIndex: number,
-  currentInput: string
+  currentInput: string,
 ) => {
   let style = 'text-gray-500';
 
@@ -51,7 +51,7 @@ const determineLetterStyle = (
   }
 
   if (isSkippedWord) {
-    style += ' underline decoration-red-700';
+    style += ' text-gray-800 underline decoration-red-700';
   }
 
   if (isCompletedWord) {
@@ -77,7 +77,7 @@ const WordsDisplay: React.FC<WordsDisplayProps> = ({
             word,
             letterIndex,
             currentWordIndex,
-            currentInput
+            currentInput,
           );
           const isStartOfWord =
             wordIndex === currentWordIndex &&
@@ -103,7 +103,7 @@ const WordsDisplay: React.FC<WordsDisplayProps> = ({
   const renderLetterAndCaret = (
     letterToDisplay: JSX.Element,
     shouldPlaceCaret: boolean,
-    isStartOfWord: boolean
+    isStartOfWord: boolean,
   ) => {
     const caret = <span className='caret'></span>;
     return shouldPlaceCaret ? (
@@ -138,9 +138,9 @@ const WordsDisplay: React.FC<WordsDisplayProps> = ({
         return renderLetterAndCaret(
           letterToDisplay,
           shouldPlaceCaret,
-          isStartOfWord
+          isStartOfWord,
         );
-      }
+      },
     );
   };
 

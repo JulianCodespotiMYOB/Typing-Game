@@ -4,7 +4,7 @@ import Translate from 'translate';
 
 export async function createWords(
   wordCount: number,
-  wordStyle: Language
+  wordStyle: Language,
 ): Promise<string[]> {
   const words = generate(wordCount).join(' ');
   const translated = await Translate(words, { from: 'en', to: wordStyle });

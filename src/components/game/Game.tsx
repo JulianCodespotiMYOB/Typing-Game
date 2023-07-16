@@ -38,7 +38,7 @@ const Game: React.FC = () => {
   });
 
   const { startTimer, stopTimer, resetTimer, time } = useTimer(
-    settings.totalTime
+    settings.totalTime,
   );
 
   const typingInputRef = useRef<HTMLInputElement>(null);

@@ -18,7 +18,7 @@ const TypingInput = forwardRef<HTMLInputElement, TypingInputProps>(
         className='p-2 w-full rounded shadow-md mt-6 opacity-0'
       />
     );
-  }
+  },
 );
 
 TypingInput.displayName = 'TypingInput';

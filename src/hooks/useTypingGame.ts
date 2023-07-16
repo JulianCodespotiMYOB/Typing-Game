@@ -23,7 +23,7 @@ const useTypingGame = (randomWords: string[], resetTimer: () => void) => {
         setScore((prev) => prev + 1);
       }
     },
-    [active, words, currentWordIndex]
+    [active, words, currentWordIndex],
   );
 
   const handleReset = () => {
