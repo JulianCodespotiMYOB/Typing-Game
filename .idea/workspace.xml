@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="92c56e7f-cad5-4a2b-817e-c94b3605fc5e" name="Changes" comment="Update auth flow and format existing code">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/game/WordsDisplay.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/game/WordsDisplay.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +49,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "prettierjs.PrettierConfiguration.Package": "/Users/Julian.Codespoti/.nvm/versions/node/v16.20.0/lib/node_modules/prettier",
+    "prettierjs.PrettierConfiguration.Package": "/Users/Julian.Codespoti/Desktop/Personal/Typing-Game/node_modules/prettier",
     "run.code.analysis.last.selected.profile": "pProject Default",
     "settings.editor.selected.configurable": "settings.javascript.prettier",
     "ts.external.directory.path": "/Users/Julian.Codespoti/Desktop/Personal/Typing-Game/node_modules/typescript/lib",
@@ -85,7 +86,7 @@
       <workItem from="1688726922275" duration="2534000" />
       <workItem from="1689048203898" duration="11018000" />
       <workItem from="1689486871337" duration="100000" />
-      <workItem from="1689486984091" duration="1283000" />
+      <workItem from="1689486984091" duration="1898000" />
     </task>
     <task id="LOCAL-00001" summary="Add statistics at end game, timer, etc.">
       <option name="closed" value="true" />

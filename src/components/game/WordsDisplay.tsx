@@ -51,7 +51,7 @@ const determineLetterStyle = (
   }
 
   if (isSkippedWord) {
-    style += ' text-gray-800 underline decoration-red-700';
+    style += ' underline decoration-red-700';
   }
 
   if (isCompletedWord) {
