@@ -8,3 +8,5 @@ export { default as Timer } from './game/Timer';
 export { default as TypingInput } from './game/TypingInput';
 export { default as WordsDisplay } from './game/WordsDisplay';
 export { default as Settings } from './game/GameSettings';
+
+export { default as AuthForm } from './auth/authForm';
