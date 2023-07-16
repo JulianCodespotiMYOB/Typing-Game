@@ -22,7 +22,7 @@ const GameSettings: React.FC<SettingsProps> = ({
   currentLanguage,
   isVisible,
 }) => {
-  const times = [15, 30, 45, 60, 90, 120];
+  const times = [5, 15, 30, 45, 60, 90, 120];
   const languages: Language[] = ['en', 'es', 'it'];
 
   const createLanguageOptions = () =>
