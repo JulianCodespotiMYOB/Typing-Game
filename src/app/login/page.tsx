@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
@@ -24,7 +24,10 @@ const LoginPage: React.FC = () => {
   return (
     <div className='flex justify-center items-center min-h-screen bg-gray-900'>
       <div className='w-full max-w-md'>
-        <form className='bg-gray-800 shadow-lg rounded px-12 pt-6 pb-8 mb-4' onSubmit={handleLogin}>
+        <form
+          className='bg-gray-800 shadow-lg rounded px-12 pt-6 pb-8 mb-4'
+          onSubmit={handleLogin}
+        >
           <div className='text-2xl flex justify-center border-b-2 py-2 mb-4 text-white'>
             Login
           </div>
@@ -75,7 +78,9 @@ const LoginPage: React.FC = () => {
             </a>
           </div>
         </form>
-        {error && <div className="text-red-500 py-2 text-center">{error.message}</div>}
+        {error && (
+          <div className='text-red-500 py-2 text-center'>{error.message}</div>
+        )}
       </div>
     </div>
   );
