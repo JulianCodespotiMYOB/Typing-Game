@@ -36,7 +36,6 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
     case 'INPUT': {
       const wordList = [...state.wordList];
       const currentWord: Word = { ...wordList[state.currentIndex] };
-
       const prevLength = currentWord.typed.length;
       currentWord.typed = action.payload;
 

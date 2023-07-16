@@ -5,7 +5,9 @@ type GameStatistics = {
   rawWpm: number;
   accuracy: number;
   time: number;
-  missedWords: string[];
+  correctKeystrokes: number;
+  incorrectKeystrokes: number;
+  missedWords: number;
 };
 
 export function calculateGameStatistics(
@@ -27,7 +29,7 @@ export function calculateGameStatistics(
   const accuracy = calculateAccuracy(
     correctKeystrokes,
     incorrectKeystrokes,
-    missedWords.length,
+    missedWords,
   );
 
   return {
@@ -35,6 +37,8 @@ export function calculateGameStatistics(
     rawWpm,
     accuracy,
     time: totalTime,
+    correctKeystrokes,
+    incorrectKeystrokes,
     missedWords,
   };
 }
@@ -45,12 +49,12 @@ function gatherStatistics(typedWords: Word[]) {
   let totalTypedCharacters = 0;
   let correctKeystrokes = 0;
   let incorrectKeystrokes = 0;
-  const missedWords: string[] = [];
+  let missedWords = 0;
 
   typedWords.forEach((word) => {
     totalTypedCharacters += word.typed.replace(/\s+/g, '').length;
     if (word.status === WordStatus.Skipped) {
-      missedWords.push(word.text);
+      missedWords++;
       return;
     }
 
