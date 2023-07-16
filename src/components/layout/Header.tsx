@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
 
 const Header: React.FC = () => {
-  const user = useUser();
+  const { user, logout } = useUser();
+
   return (
     <header className='text-gray-300 py-2.5 px-6'>
       <div className='flex justify-between items-center'>
@@ -16,7 +17,9 @@ const Header: React.FC = () => {
             {user ? (
               <>
                 <li>
-                  <Link href='/logout'>Logout</Link>
+                  <Link onClick={logout} href='/'>
+                    Logout
+                  </Link>
                 </li>
 
                 <li>
