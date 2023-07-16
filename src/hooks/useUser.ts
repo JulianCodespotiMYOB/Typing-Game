@@ -5,17 +5,20 @@ import { supabase } from '@/lib/supabase';
 
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Initialize
     supabase.auth.getSession().then((session) => {
       setUser(session.data.session?.user ?? null);
+      setIsLoading(false);
     });
 
     // Subscribe to changes
     const { data: authSubscription } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
+        setIsLoading(false);
       },
     );
 
@@ -36,5 +39,5 @@ export function useUser() {
       });
   };
 
-  return { user, logout };
+  return { user, logout, isLoading };
 }
