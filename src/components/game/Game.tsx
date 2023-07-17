@@ -35,6 +35,9 @@ const Game: React.FC = () => {
     rawWpm: 0,
     accuracy: 0,
     time: 0,
+    correctKeystrokes: 0,
+    incorrectKeystrokes: 0,
+    missedWords: 0,
   });
 
   const { startTimer, stopTimer, resetTimer, time } = useTimer(
@@ -190,7 +193,9 @@ const Game: React.FC = () => {
             wpm={gameStats.wpm}
             rawWpm={gameStats.rawWpm}
             accuracy={gameStats.accuracy}
-            time={gameStats.time}
+            correctKeystrokes={gameStats.correctKeystrokes}
+            incorrectKeystrokes={gameStats.incorrectKeystrokes}
+            missedWords={gameStats.missedWords}
           />
         </div>
       )}

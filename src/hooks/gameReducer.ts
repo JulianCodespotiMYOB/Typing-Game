@@ -1,11 +1,6 @@
-export interface Word {
-  text: string;
-  status: WordStatus;
-  typed: string;
-}
-
 import { WordStatus } from '@/types/WordStatus';
 import { GameState } from '@/types/GameState';
+import { Word } from '@/types';
 
 type GameAction =
   | { type: 'INPUT'; payload: string }
@@ -20,17 +15,19 @@ type GameAction =
 const gameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
     case 'LOAD_WORDLIST': {
-      const wordList = action.payload.map((word) => ({
+      const wordList: Word[] = action.payload.map((word) => ({
         text: word,
         status: WordStatus.Untyped,
         typed: '',
+        correctKeystrokes: 0,
+        incorrectKeystrokes: 0,
       }));
       return { ...state, wordList };
     }
 
     case 'START': {
       const wordList = [...state.wordList];
-      const currentWord: Word = { ...wordList[state.currentIndex] };
+      const currentWord: Word = wordList[state.currentIndex];
       currentWord.status = WordStatus.Typing;
       wordList[state.currentIndex] = currentWord;
       return { ...state, gameIsActive: true, wordList, gameIsFinished: false };
@@ -39,7 +36,18 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
     case 'INPUT': {
       const wordList = [...state.wordList];
       const currentWord: Word = { ...wordList[state.currentIndex] };
+      const prevLength = currentWord.typed.length;
       currentWord.typed = action.payload;
+
+      const isCorrect = currentWord.text.startsWith(currentWord.typed);
+
+      if (isCorrect) {
+        currentWord.correctKeystrokes += currentWord.typed.length - prevLength;
+      } else {
+        currentWord.incorrectKeystrokes +=
+          currentWord.typed.length - prevLength;
+      }
+
       wordList[state.currentIndex] = currentWord;
 
       return {

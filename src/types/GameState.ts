@@ -25,7 +25,7 @@ export const InitialGameState: GameState = {
 };
 
 export const InitialGameSettings: GameSettings = {
-  totalTime: 60,
+  totalTime: 15,
   wordCount: 100,
   wordListStyle: 'en',
 };
