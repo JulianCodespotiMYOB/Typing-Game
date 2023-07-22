@@ -29,7 +29,7 @@ const Page = () => {
     }
 
     toast.success(
-      'Registration successful! Please check your email to confirm your account.'
+      'Registration successful! Please check your email to confirm your account.',
     );
 
     redirect('/login');
