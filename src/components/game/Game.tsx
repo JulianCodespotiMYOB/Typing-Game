@@ -185,10 +185,6 @@ const Game: React.FC = () => {
 
       {state.gameIsFinished && (
         <div className='w-full'>
-          <EndGameSettings
-            handleNextGame={handleNextGame}
-            handleRepeatGame={handleRepeatGame}
-          />
           <GameStatistics
             wpm={gameStats.wpm}
             rawWpm={gameStats.rawWpm}
@@ -196,6 +192,10 @@ const Game: React.FC = () => {
             correctKeystrokes={gameStats.correctKeystrokes}
             incorrectKeystrokes={gameStats.incorrectKeystrokes}
             missedWords={gameStats.missedWords}
+          />
+          <EndGameSettings
+            handleNextGame={handleNextGame}
+            handleRepeatGame={handleRepeatGame}
           />
         </div>
       )}
