@@ -19,6 +19,7 @@
     "autoprefixer": "^10.4.14",
     "chart.js": "^4.3.0",
     "chartjs-plugin-annotation": "^3.0.1",
+    "encoding": "^0.1.13",
     "eslint-config-next": "13.4.6",
     "fa": "^1.0.1",
     "next": "^13.4.10-canary.3",

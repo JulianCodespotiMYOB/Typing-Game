@@ -12,8 +12,10 @@ import React, {
 import { gameReducer, useTimer } from '@/hooks';
 import {
   GameSettings as GameSettingsT,
+  GameStats,
   InitialGameSettings,
   InitialGameState,
+  InitialGameStats,
   Language,
 } from '@/types';
 
@@ -26,19 +28,15 @@ import EndGameSettings from '@/components/game/EndGameSettings';
 import GameStatistics from '@/components/game/GameStatistics';
 import { calculateGameStatistics } from '@/lib/gameStatistics';
 import { createWords } from '@/lib/wordGenerator';
+import { useUser } from '@/hooks/useUser';
+import { supabase } from '@/lib/supabase';
 
-const Game: React.FC = () => {
+const Game = () => {
+  const { user } = useUser();
+
   const [settings, setSettings] = useState<GameSettingsT>(InitialGameSettings);
   const [state, dispatch] = useReducer(gameReducer, InitialGameState);
-  const [gameStats, setGameStats] = useState({
-    wpm: 0,
-    rawWpm: 0,
-    accuracy: 0,
-    time: 0,
-    correctKeystrokes: 0,
-    incorrectKeystrokes: 0,
-    missedWords: 0,
-  });
+  const [gameStats, setGameStats] = useState(InitialGameStats);
 
   const { startTimer, stopTimer, resetTimer, time } = useTimer(
     settings.totalTime,
@@ -139,6 +137,28 @@ const Game: React.FC = () => {
   useEffect(() => {
     if (state.gameIsFinished) {
       const stats = calculateGameStatistics(state.wordList, settings.totalTime);
+
+      // I don't like this one bit
+      const insertScore = async () => {
+        if (!user) return;
+
+        await supabase.from('scores').insert([
+          {
+            user_id: user.id,
+            wpm: stats.wpm,
+            raw_wpm: stats.rawWpm,
+            accuracy: stats.accuracy,
+            incorrect_keystrokes: stats.incorrectKeystrokes,
+            correct_keystrokes: stats.correctKeystrokes,
+            time: new Date(stats.time).toISOString(),
+            missed_words: stats.missedWords,
+          },
+        ]);
+      };
+
+      // Execute evil async function
+      insertScore();
+
       setGameStats(stats);
     }
   }, [state.gameIsFinished]);
