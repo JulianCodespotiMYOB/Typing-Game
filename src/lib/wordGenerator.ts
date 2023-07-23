@@ -210,17 +210,32 @@ lick
 milk
 `;
 
+const memoizedTranslations: { [key: string]: string } = {};
+
 export async function createWords(
   wordCount: number,
   wordStyle: Language,
 ): Promise<string[]> {
-  const words = wordList
+  return (await getOrTranslate(wordList, wordStyle))
     .trim()
     .split('\n')
     .sort(() => Math.random() - 0.5)
     .slice(0, wordCount)
-    .join(' ');
-
-  const translated = await Translate(words, { from: 'en', to: wordStyle });
-  return translated.split(' ');
+    .map((word) => word.trim().toLowerCase());
 }
+
+const getOrTranslate = async (wordList: string, wordStyle: Language) => {
+  const memoizedTranslatedWordlist = memoizedTranslations?.[wordStyle];
+  if (memoizedTranslatedWordlist) {
+    return memoizedTranslatedWordlist;
+  }
+
+  const translatedWordList = await Translate(wordList, {
+    from: 'en',
+    to: wordStyle,
+  });
+
+  memoizedTranslations[wordStyle] = translatedWordList;
+
+  return translatedWordList;
+};
