@@ -1,9 +1,10 @@
 'use client';
+
 import { User } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
-export function useUser() {
+function useSupabase() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,5 +40,7 @@ export function useUser() {
       });
   };
 
-  return { user, logout, isLoading };
+  return { user, logout, isLoading, client: supabase };
 }
+
+export default useSupabase;

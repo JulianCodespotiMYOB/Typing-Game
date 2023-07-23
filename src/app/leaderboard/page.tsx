@@ -1,32 +1,20 @@
+import { getLeaderboard } from '@/api';
 import { supabase } from '@/lib/supabase';
-import { GameStats } from '@/types';
 import React from 'react';
 
 interface Score {
   id: number;
-  name: string;
+  email: string;
   wpm: number;
   accuracy: number;
-  time: string;
+  duration: number;
+  timeStamp: string;
 }
 
 const LeaderboardPage: React.FC = async () => {
   const page = 1;
 
-  const entries = await supabase
-    .from('scores')
-    .select('score_id, wpm, accuracy, time')
-    .order('wpm', { ascending: false })
-    .limit(10)
-    .then((res) =>
-      (res.data ?? []).map((s) => ({
-        id: s.score_id,
-        name: 'Anonymous',
-        wpm: s.wpm,
-        accuracy: s.accuracy,
-        time: s.time,
-      })),
-    );
+  const entries = await getLeaderboard(supabase);
 
   const tableHeader = () => {
     const cellStyle = 'px-4 py-3 text-sm border-gray-200 border-gray-800';
@@ -34,10 +22,11 @@ const LeaderboardPage: React.FC = async () => {
     return (
       <thead className='text-xs text-gray-200 uppercase bg-gray-600'>
         <tr>
-          <th className={cellStyle}>Name</th>
+          <th className={cellStyle}>Email</th>
           <th className={cellStyle}>WPM</th>
           <th className={cellStyle}>Accuracy</th>
-          <th className={cellStyle}>Time</th>
+          <th className={cellStyle}>Duration</th>
+          <th className={cellStyle}>Date</th>
         </tr>
       </thead>
     );
@@ -50,10 +39,11 @@ const LeaderboardPage: React.FC = async () => {
 
     return (
       <tr key={score.id} className={style}>
-        <td className={cellStyle}>{score.name}</td>
+        <td className={cellStyle}>{score.email}</td>
         <td className={cellStyle}>{score.wpm}</td>
         <td className={cellStyle}>{score.accuracy}%</td>
-        <td className={cellStyle}>{score.time} seconds</td>
+        <td className={cellStyle}>{score.duration} seconds</td>
+        <td className={cellStyle}>{score.timeStamp}</td>
       </tr>
     );
   });

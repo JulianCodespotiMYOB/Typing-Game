@@ -1,10 +1,10 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
-import { useUser } from '@/hooks/useUser';
+import { useSupabase } from '@/hooks';
 
 const Header: React.FC = () => {
-  const { user, logout, isLoading } = useUser();
+  const { user, logout, isLoading } = useSupabase();
 
   const headerOptions = () => {
     if (isLoading) {

@@ -9,10 +9,9 @@ import React, {
   useState,
 } from 'react';
 
-import { gameReducer, useTimer } from '@/hooks';
+import { gameReducer, useSupabase, useTimer } from '@/hooks';
 import {
   GameSettings as GameSettingsT,
-  GameStats,
   InitialGameSettings,
   InitialGameState,
   InitialGameStats,
@@ -28,11 +27,12 @@ import EndGameSettings from '@/components/game/EndGameSettings';
 import GameStatistics from '@/components/game/GameStatistics';
 import { calculateGameStatistics } from '@/lib/gameStatistics';
 import { createWords } from '@/lib/wordGenerator';
-import { useUser } from '@/hooks/useUser';
-import { supabase } from '@/lib/supabase';
+import { useScoreMutation } from '@/api';
+import Providers from '@/lib/providers';
 
 const Game = () => {
-  const { user } = useUser();
+  const { user } = useSupabase();
+  const { mutate: addScore } = useScoreMutation();
 
   const [settings, setSettings] = useState<GameSettingsT>(InitialGameSettings);
   const [state, dispatch] = useReducer(gameReducer, InitialGameState);
@@ -138,26 +138,7 @@ const Game = () => {
     if (state.gameIsFinished) {
       const stats = calculateGameStatistics(state.wordList, settings.totalTime);
 
-      // I don't like this one bit
-      const insertScore = async () => {
-        if (!user) return;
-
-        await supabase.from('scores').insert([
-          {
-            user_id: user.id,
-            wpm: stats.wpm,
-            raw_wpm: stats.rawWpm,
-            accuracy: stats.accuracy,
-            incorrect_keystrokes: stats.incorrectKeystrokes,
-            correct_keystrokes: stats.correctKeystrokes,
-            time: new Date(stats.time).toISOString(),
-            missed_words: stats.missedWords,
-          },
-        ]);
-      };
-
-      // Execute evil async function
-      insertScore();
+      addScore({ userId: user?.id ?? '', ...stats });
 
       setGameStats(stats);
     }
@@ -223,4 +204,10 @@ const Game = () => {
   );
 };
 
-export default Game;
+const GameWithProviders = () => (
+  <Providers>
+    <Game />
+  </Providers>
+);
+
+export default GameWithProviders;

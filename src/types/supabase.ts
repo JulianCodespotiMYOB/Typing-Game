@@ -13,33 +13,36 @@ export interface Database {
         Row: {
           accuracy: number;
           correct_keystrokes: number;
+          duration: number;
           incorrect_keystrokes: number;
           missed_words: number;
           raw_wpm: number;
           score_id: number;
-          time: string;
+          time_stamp: string;
           user_id: string;
           wpm: number;
         };
         Insert: {
           accuracy: number;
           correct_keystrokes: number;
+          duration: number;
           incorrect_keystrokes: number;
           missed_words: number;
           raw_wpm: number;
           score_id?: number;
-          time: string;
+          time_stamp: string;
           user_id: string;
           wpm: number;
         };
         Update: {
           accuracy?: number;
           correct_keystrokes?: number;
+          duration?: number;
           incorrect_keystrokes?: number;
           missed_words?: number;
           raw_wpm?: number;
           score_id?: number;
-          time?: string;
+          time_stamp?: string;
           user_id?: string;
           wpm?: number;
         };
@@ -50,11 +53,31 @@ export interface Database {
             referencedRelation: 'users';
             referencedColumns: ['id'];
           },
+          {
+            foreignKeyName: 'scores_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
         ];
       };
     };
     Views: {
-      [_ in never]: never;
+      users: {
+        Row: {
+          email: string | null;
+          id: string | null;
+        };
+        Insert: {
+          email?: string | null;
+          id?: string | null;
+        };
+        Update: {
+          email?: string | null;
+          id?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       [_ in never]: never;

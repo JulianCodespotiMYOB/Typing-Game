@@ -8,8 +8,14 @@ CREATE TABLE public.scores (
   correct_keystrokes INTEGER NOT NULL,
   incorrect_keystrokes INTEGER NOT NULL,
   missed_words INTEGER NOT NULL,
-  time TIMESTAMP NOT NULL
+  duration INTEGER NOT NULL
+  time_stamp TIMESTAMPTZ NOT NULL,
 );
 
 -- Create an index on user_id for faster queries
 CREATE INDEX ON public.scores (user_id);
+
+-- Create a view of auth.users that has a primary key and the email
+CREATE VIEW public.users AS
+  SELECT id, email
+  FROM auth.users;
