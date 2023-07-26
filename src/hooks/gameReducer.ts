@@ -1,3 +1,5 @@
+'use client';
+
 import { WordStatus } from '@/types/WordStatus';
 import { GameState } from '@/types/GameState';
 import { Word } from '@/types';

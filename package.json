@@ -15,12 +15,14 @@
     "@supabase/auth-ui-react": "^0.4.2",
     "@supabase/auth-ui-shared": "^0.1.6",
     "@supabase/supabase-js": "^2.26.0",
+    "@tanstack/react-query": "^4.32.0",
     "@types/node": "20.3.1",
     "@types/react": "18.2.13",
     "@types/react-dom": "18.2.6",
     "autoprefixer": "^10.4.14",
     "chart.js": "^4.3.0",
     "chartjs-plugin-annotation": "^3.0.1",
+    "encoding": "^0.1.13",
     "eslint-config-next": "13.4.6",
     "fa": "^1.0.1",
     "next": "^13.4.10-canary.3",
@@ -42,7 +44,8 @@
     "eslint-plugin-prettier": "^5.0.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.3",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "supabase": "^1.77.9"
   },
   "lint-staged": {
     "**/*.{js,jsx,json}": [

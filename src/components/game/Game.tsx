@@ -9,11 +9,12 @@ import React, {
   useState,
 } from 'react';
 
-import { gameReducer, useTimer } from '@/hooks';
+import { gameReducer, useSupabase, useTimer } from '@/hooks';
 import {
   GameSettings as GameSettingsT,
   InitialGameSettings,
   InitialGameState,
+  InitialGameStats,
   Language,
 } from '@/types';
 
@@ -26,19 +27,16 @@ import EndGameSettings from '@/components/game/EndGameSettings';
 import GameStatistics from '@/components/game/GameStatistics';
 import { calculateGameStatistics } from '@/lib/gameStatistics';
 import { createWords } from '@/lib/wordGenerator';
+import { useScoreMutation } from '@/api';
+import Providers from '@/lib/providers';
 
-const Game: React.FC = () => {
+const Game = () => {
+  const { user } = useSupabase();
+  const { mutate: addScore } = useScoreMutation();
+
   const [settings, setSettings] = useState<GameSettingsT>(InitialGameSettings);
   const [state, dispatch] = useReducer(gameReducer, InitialGameState);
-  const [gameStats, setGameStats] = useState({
-    wpm: 0,
-    rawWpm: 0,
-    accuracy: 0,
-    time: 0,
-    correctKeystrokes: 0,
-    incorrectKeystrokes: 0,
-    missedWords: 0,
-  });
+  const [gameStats, setGameStats] = useState(InitialGameStats);
 
   const { startTimer, stopTimer, resetTimer, time } = useTimer(
     settings.totalTime,
@@ -139,6 +137,9 @@ const Game: React.FC = () => {
   useEffect(() => {
     if (state.gameIsFinished) {
       const stats = calculateGameStatistics(state.wordList, settings.totalTime);
+
+      addScore({ userId: user?.id ?? '', ...stats });
+
       setGameStats(stats);
     }
   }, [state.gameIsFinished]);
@@ -203,4 +204,10 @@ const Game: React.FC = () => {
   );
 };
 
-export default Game;
+const GameWithProviders = () => (
+  <Providers>
+    <Game />
+  </Providers>
+);
+
+export default GameWithProviders;
